@@ -1,26 +1,23 @@
 #!/usr/bin/env python
+#Install with: sudo halcompile --install --userspace midi.py 
 import sys
 import rtmidi
 import threading
 import hal, time
-h = hal.component('midi')
+halMidi = hal.component('midi')
 
+debug = False
 
-def print_message(midi, port, hhh):
-    if midi.isController():
-        print '%s: CONTROLLER' % port, midi.getControllerNumber(), midi.getControllerValue()
-        h['m'] = midi.getControllerValue()
 
 class Collector(threading.Thread):
-    def __init__(self, device, port, hh):
+    def __init__(self, device, port, hal):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self.port = port
         self.portName = device.getPortName(port)
         self.device = device
-        self.hal = hh
+        self.hal = hal
         self.quit = False
-	print 'Device:', device.getPortName(port)
 
     def run(self):
         self.device.openPort(self.port)
@@ -28,26 +25,39 @@ class Collector(threading.Thread):
         while True:
            if self.quit:
                 return
-           msg = self.device.getMessage()
-           if msg:
-                print_message(msg, self.portName, self.hal)
+           midiMessage = self.device.getMessage()
+           if midiMessage and midiMessage.isController():
+                controllerNumber = midiMessage.getControllerNumber()
+                controllerValue = midiMessage.getControllerValue()
+                if debug:
+                    print(controllerNumber, controllerValue)
+                self.hal[str(self.port) + '.controller.'+ str(controllerNumber) + '.out']  = controllerValue 
 
+try:
+    midiIn = rtmidi.RtMidiIn()
+    collectors = []
 
-dev = rtmidi.RtMidiIn()
-collectors = []
-h.newpin("m", hal.HAL_S32, hal.HAL_OUT)
-h.ready()
+    
+    for port in range(midiIn.getPortCount()):
+        midiDevice = rtmidi.RtMidiIn()    
+        midiPortName = midiIn.getPortName(port)
+        if debug:
+            print(midiPortName)
+        collector = Collector(midiDevice, port, halMidi)
+        
+        collector.start()
+        collectors.append(collector)
 
-for i in range(dev.getPortCount()):
-    device = rtmidi.RtMidiIn()
-    print 'OPENING',dev.getPortName(i)
-    collector = Collector(device, i, h)
-    collector.start()
-    collectors.append(collector)
+        for controller in range(0, 127):
+            halPinName = str(port) + ".controller." + str(controller) + '.out'
+            if debug:
+                print(halPinName)
+            halMidi.newpin(halPinName, hal.HAL_S32, hal.HAL_OUT)
+    halMidi.ready()
+    while True: 
+        time.sleep(1)
 
-
-
-print 'HIT ENTER TO EXIT'
-sys.stdin.read(1)
-for c in collectors:
-    c.quit = True
+    for c in collectors:
+        c.quit = True
+finally:
+    halMidi.exit()
