@@ -1,7 +1,14 @@
 # linuxcnc-midi
 [LinuxCNC](http://linuxcnc.org/) HAL module for mapping MIDI events to HAL pins. 
 
-Uses [pyrtmidi](https://github.com/patrickkidd/pyrtmidi) to pick up MIDI messages.
+
+
+My mapping to LinuxCNC on KORG nanoKONTROLL2:
+![KORG nanoKONTROLL2](midi-controller.jpg)
+
+## Dependencies
+- Uses [pyrtmidi](https://github.com/patrickkidd/pyrtmidi) to pick up MIDI messages.
+ - Uses HAL (Hardware Abstraction Layer) to map pins into the LinuxCNC environment.
 
 ## Compability
 Works with: 
