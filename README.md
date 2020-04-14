@@ -3,7 +3,7 @@
 
 
 
-My mapping to LinuxCNC on KORG nanoKONTROLL2:
+My mapping to LinuxCNC on KORG nanoKONTROL2:
 ![KORG nanoKONTROL2](midi-controller.jpg)
 
 ## Dependencies
