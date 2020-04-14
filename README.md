@@ -1,5 +1,5 @@
 # linuxcnc-midi
-[LinuxCNC](http://linuxcnc.org/) HAL module for mapping MIDI events to HAL pins. 
+[LinuxCNC](http://linuxcnc.org/) [Hardware Abstraction Layer](http://linuxcnc.org/docs/html/hal/intro.html) module for mapping MIDI events to HAL pins. 
 
 
 
