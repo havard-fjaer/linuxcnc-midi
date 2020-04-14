@@ -4,7 +4,7 @@
 
 
 My mapping to LinuxCNC on KORG nanoKONTROLL2:
-![KORG nanoKONTROLL2](midi-controller.jpg)
+![KORG nanoKONTROL2](midi-controller.jpg)
 
 ## Dependencies
 - Uses [pyrtmidi](https://github.com/patrickkidd/pyrtmidi) to pick up MIDI messages.
